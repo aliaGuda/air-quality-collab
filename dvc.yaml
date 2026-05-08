@@ -1,0 +1,45 @@
+stages:
+  prepare:
+    cmd: python src/data/prepare.py
+    deps:
+      - src/data/prepare.py
+      - data/raw/AirQualityUCI.csv
+      - configs/params.yaml
+    outs:
+      - data/processed/cleaned.csv
+
+  preprocess:
+    cmd: python src/data/preprocess.py
+    deps:
+      - src/data/preprocess.py
+      - data/processed/cleaned.csv
+      - configs/params.yaml
+    outs:
+      - data/splits/train.csv
+      - data/splits/test.csv
+      - data/splits/reference.csv
+      - data/splits/production.csv
+
+  featurize:
+    cmd: python src/features/featurize.py
+    deps:
+      - src/features/featurize.py
+      - data/splits/train.csv
+      - data/splits/test.csv
+      - configs/params.yaml
+    outs:
+      - models/preprocessing_pipeline.joblib
+      - data/processed/X_train.csv
+      - data/processed/X_test.csv
+      - data/processed/y_train.csv
+      - data/processed/y_test.csv
+
+  train:
+    cmd: python src/training/train.py
+    deps:
+      - src/training/train.py
+      - data/processed/X_train.csv
+      - data/processed/y_train.csv
+      - configs/params.yaml
+    outs:
+      - models/model.joblib

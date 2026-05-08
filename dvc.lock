@@ -1,0 +1,118 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python src/data/prepare.py
+    deps:
+    - path: configs/params.yaml
+      hash: md5
+      md5: 86ee1b56d13527d1d7e80c70220816f8
+      size: 2790
+    - path: data/raw/AirQualityUCI.csv
+      hash: md5
+      md5: 4a319fea110dd84441d7051b1664858f
+      size: 771340
+    - path: src/data/prepare.py
+      hash: md5
+      md5: 27129fc06e89c9de21b96982ceddaa7f
+      size: 1387
+    outs:
+    - path: data/processed/cleaned.csv
+      hash: md5
+      md5: 86a3933d92ce48a419890cf63aa917e6
+      size: 805571
+  preprocess:
+    cmd: python src/data/preprocess.py
+    deps:
+    - path: configs/params.yaml
+      hash: md5
+      md5: 86ee1b56d13527d1d7e80c70220816f8
+      size: 2790
+    - path: data/processed/cleaned.csv
+      hash: md5
+      md5: 86a3933d92ce48a419890cf63aa917e6
+      size: 805571
+    - path: src/data/preprocess.py
+      hash: md5
+      md5: 2f7e9819583a76942da9e94bd14c674e
+      size: 2560
+    outs:
+    - path: data/splits/production.csv
+      hash: md5
+      md5: 41b77b18f13fbd729b3f8ea2829bb17c
+      size: 36038
+    - path: data/splits/reference.csv
+      hash: md5
+      md5: fa62fa15a680580849777bcd5a3e7b20
+      size: 84500
+    - path: data/splits/test.csv
+      hash: md5
+      md5: cd5e8e4969003b45b68575b195d008fc
+      size: 120397
+    - path: data/splits/train.csv
+      hash: md5
+      md5: 731453662efc69bcd139a62fbc77b957
+      size: 481105
+  featurize:
+    cmd: python src/features/featurize.py
+    deps:
+    - path: configs/params.yaml
+      hash: md5
+      md5: 86ee1b56d13527d1d7e80c70220816f8
+      size: 2790
+    - path: data/splits/test.csv
+      hash: md5
+      md5: cd5e8e4969003b45b68575b195d008fc
+      size: 120397
+    - path: data/splits/train.csv
+      hash: md5
+      md5: 731453662efc69bcd139a62fbc77b957
+      size: 481105
+    - path: src/features/featurize.py
+      hash: md5
+      md5: 63d0a4ce119b905d1c07f5aaa275aaf2
+      size: 4942
+    outs:
+    - path: data/processed/X_test.csv
+      hash: md5
+      md5: f5653b7258d3afe2e2ceb3407ac1d124
+      size: 4714476
+    - path: data/processed/X_train.csv
+      hash: md5
+      md5: 261878a96e32583de75b03a12fa313ad
+      size: 18853190
+    - path: data/processed/y_test.csv
+      hash: md5
+      md5: 1bd2d48a57f3ccba26d70638d780a8de
+      size: 7684
+    - path: data/processed/y_train.csv
+      hash: md5
+      md5: 49690b44bc3c528cf6b6d118cda6d848
+      size: 30707
+    - path: models/preprocessing_pipeline.joblib
+      hash: md5
+      md5: 452e490dba983fc4c8dd2924250df7ae
+      size: 3868
+  train:
+    cmd: python src/training/train.py
+    deps:
+    - path: configs/params.yaml
+      hash: md5
+      md5: 86ee1b56d13527d1d7e80c70220816f8
+      size: 2790
+    - path: data/processed/X_train.csv
+      hash: md5
+      md5: 261878a96e32583de75b03a12fa313ad
+      size: 18853190
+    - path: data/processed/y_train.csv
+      hash: md5
+      md5: 49690b44bc3c528cf6b6d118cda6d848
+      size: 30707
+    - path: src/training/train.py
+      hash: md5
+      md5: 7e21ec2e66c1f740c413383882bb148c
+      size: 11759
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: b48df0579870dcb4a0606981ad01a183
+      size: 1347069

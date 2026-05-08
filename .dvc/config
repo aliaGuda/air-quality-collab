@@ -1,0 +1,6 @@
+[core]
+    remote = myremote
+['remote "myremote"']
+    url = s3://airquality/dvcstore
+    endpointurl = https://d16a42901b34328b626d5d537f92e0b0.r2.cloudflarestorage.com
+    listobjects = false
