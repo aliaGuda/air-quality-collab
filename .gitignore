@@ -1,0 +1,57 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.env
+
+# =========================
+# Data (handled by DVC)
+# =========================
+data/raw/*
+data/processed/*
+data/splits/*
+models/
+
+# BUT keep structure
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/*.dvc
+
+data/processed/*
+!data/processed/.gitkeep
+!data/processed/*.dvc
+
+data/splits/*
+!data/splits/.gitkeep
+!data/splits/*.dvc
+
+models/*
+!models/.gitkeep
+!models/*.dvc
+
+.dvc/config.local
+
+# =========================
+# Logs & Tracking
+# =========================
+logs/*.log
+mlruns/
+.dvc/cache/
+
+# =========================
+# OS / IDE
+# =========================
+.DS_Store
+.vscode/
+.idea/
+
+# =========================
+# Keep empty folders
+# =========================
+!logs/.gitkeep

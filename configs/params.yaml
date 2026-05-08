@@ -1,0 +1,138 @@
+project:
+  name: air-quality-mlops
+  random_state: 42
+
+data:
+  raw_path: data/raw/AirQualityUCI.csv
+  cleaned_path: data/processed/cleaned.csv
+  train_path: data/splits/train.csv
+  test_path: data/splits/test.csv
+  reference_path: data/splits/reference.csv
+  production_path: data/splits/production.csv
+  separator: ";"
+  missing_value_marker: -200
+  target_column: CO(GT)
+  test_size: 0.2
+  reference_size: 0.7
+
+features:
+  datetime_columns:
+    date: Date
+    time: Time
+  drop_columns:
+    - Date
+    - Time
+
+preprocessing:
+  imputation_strategy: median
+  categorical_imputation_strategy: most_frequent
+  scaling: standard
+  encoding: onehot
+  polynomial_features:
+    enabled: true
+    degree: 2
+    include_bias: false
+  feature_selection:
+    enabled: false
+    k_best: 10
+
+feature_validation:
+  enabled: true
+  max_missing_share: 0.30
+  min_rows: 1000
+  required_columns:
+    - PT08.S1(CO)
+    - C6H6(GT)
+    - PT08.S2(NMHC)
+    - NOx(GT)
+    - PT08.S3(NOx)
+    - NO2(GT)
+    - PT08.S4(NO2)
+    - PT08.S5(O3)
+    - T
+    - RH
+    - AH
+    - hour
+    - day
+    - month
+    - day_of_week
+    - CO(GT)
+
+preprocessing:
+  imputation_strategy: median
+  categorical_imputation_strategy: most_frequent
+  scaling: standard
+  encoding: onehot
+  polynomial_features:
+    enabled: true
+    degree: 2
+    include_bias: false
+  feature_selection:
+    enabled: false
+    k_best: 10
+
+feature_importance:
+  enabled: true
+  output_csv: docs/feature_importance.csv
+  output_plot: docs/feature_importance.png
+  top_n: 20
+
+mlflow:
+  tracking_uri: http://localhost:5000
+
+training:
+  experiment_name: air-quality-regression
+  model_name: air-quality-regressor
+  metric_to_optimize: rmse
+  registry_stage: Production
+  algorithms:
+    - ridge
+    - random_forest
+    - gradient_boosting
+  hpo:
+    method: optuna
+    n_trials: 20
+  validation:
+    min_r2: 0.50
+    max_rmse: 2.5
+
+model:
+  model_path: models/model.joblib
+  preprocessing_pipeline_path: models/preprocessing_pipeline.joblib
+
+model_validation:
+  min_r2: 0.30
+  max_mae: 2.0
+
+validation:
+  min_r2: 0.3
+  max_mae: 2.0
+
+serving:
+  host: 0.0.0.0
+  port: 8000
+  model_source: mlflow_registry
+  fallback_model_path: models/model.joblib
+  preprocessing_pipeline_path: models/preprocessing_pipeline.joblib
+
+monitoring:
+  drift_threshold_share: 0.20
+  reports_dir: monitoring/evidently_reports
+  perturbation:
+    enabled: true
+    features:
+      - PT08.S1(CO)
+      - PT08.S2(NMHC)
+      - PT08.S5(O3)
+    scale_factor: 1.35
+    noise_std: 0.15
+
+logging:
+  log_file: logs/predictions.log
+  required_fields:
+    - request_id
+    - model_version
+    - confidence
+    - latency_ms
+    - feature_hash
+    - prediction
